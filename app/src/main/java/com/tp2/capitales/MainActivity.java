@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Población actualizada correctamente", Toast.LENGTH_SHORT).show();
     }
 
-    public void onClickMostrarTodasLasCiudades(View view) {
+   /* public void onClickMostrarTodasLasCiudades(View view) {
         List<Ciudad> listaCiudades = ciudadDAO.obtenerTodasLasCiudades();
 
         StringBuilder sb = new StringBuilder();
@@ -95,4 +95,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No hay ciudades registradas", Toast.LENGTH_SHORT).show();
         }
     }
+
+    */
 }
