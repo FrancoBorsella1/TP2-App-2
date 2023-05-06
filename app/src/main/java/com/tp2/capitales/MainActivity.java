@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
+import android.text.TextUtils;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Obtengo los campos de texto de la pantalla principal
         editTextNombrePais = findViewById(R.id.editTextNombrePais);
         editTextNombreCiudad = findViewById(R.id.editTextNombreCiudad);
         editTextPoblacion = findViewById(R.id.editTextPoblacion);
@@ -28,8 +29,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickAgregarCiudad(View view) {
+        //Guardo en variables el contenido de cada uno de los campos
         String nombrePais = editTextNombrePais.getText().toString();
         String nombreCiudad = editTextNombreCiudad.getText().toString();
+        String poblacionStr = editTextPoblacion.getText().toString();
+
+        // Validación para el campo de país
+        if (TextUtils.isEmpty(nombrePais)) {
+            editTextNombrePais.setError("Debe ingresar un país");
+            editTextNombrePais.requestFocus();
+            return;
+        }
+
+        // Validación para el campo de ciudad
+        if (TextUtils.isEmpty(nombreCiudad)) {
+            editTextNombreCiudad.setError("Debe ingresar una ciudad");
+            editTextNombreCiudad.requestFocus();
+            return;
+        }
+
+        // Validación para el campo de población
+        if (TextUtils.isEmpty(poblacionStr)) {
+            editTextPoblacion.setError("Debe ingresar una población");
+            editTextPoblacion.requestFocus();
+            return;
+        }
+
         int poblacion = Integer.parseInt(editTextPoblacion.getText().toString());
 
         Ciudad ciudad = new Ciudad(nombrePais, nombreCiudad, poblacion);
@@ -44,37 +69,93 @@ public class MainActivity extends AppCompatActivity {
 
         Ciudad ciudad = ciudadDAO.obtenerCiudadPorNombre(nombreCiudad);
 
-        if (ciudad != null) {
-            editTextNombrePais.setText(ciudad.getNombrePais());
-            editTextPoblacion.setText(String.valueOf(ciudad.getPoblacion()));
-            Toast.makeText(this, "Ciudad encontrada", Toast.LENGTH_SHORT).show();
+        // Validación para el campo de ciudad
+        if (TextUtils.isEmpty(nombreCiudad)) {
+            editTextNombreCiudad.setError("Debe ingresar una ciudad");
+            editTextNombreCiudad.requestFocus();
+            return;
         } else {
-            Toast.makeText(this, "Ciudad no encontrada", Toast.LENGTH_SHORT).show();
+            if (ciudad != null) {
+                editTextNombrePais.setText(ciudad.getNombrePais());
+                editTextPoblacion.setText(String.valueOf(ciudad.getPoblacion()));
+                Toast.makeText(this, "Ciudad encontrada", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Ciudad no encontrada", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     public void onClickBorrarCiudad(View view) {
         String nombreCiudad = editTextNombreCiudad.getText().toString();
 
-        ciudadDAO.borrarCiudadPorNombre(nombreCiudad);
+        // Validación para el campo de ciudad
+        if (TextUtils.isEmpty(nombreCiudad)) {
+            editTextNombreCiudad.setError("Debe ingresar una ciudad");
+            editTextNombreCiudad.requestFocus();
+            return;
+        }
 
+        ciudadDAO.borrarCiudadPorNombre(nombreCiudad);
         Toast.makeText(this, "Ciudad borrada correctamente", Toast.LENGTH_SHORT).show();
     }
 
     public void onClickBorrarCiudadesPorPais(View view) {
         String nombrePais = editTextNombrePais.getText().toString();
 
-        ciudadDAO.borrarCiudadesPorNombrePais(nombrePais);
+        // Validación para el campo de nombre de país
+        if (TextUtils.isEmpty(nombrePais)) {
+            editTextNombrePais.setError("Debe ingresar un nombre de país");
+            editTextNombrePais.requestFocus();
+            return;
+        }
 
-        Toast.makeText(this, "Ciudades borradas correctamente", Toast.LENGTH_SHORT).show();
+        //Ejecutar accion de eliminacion si se ingresa un nombre de pais valido
+
+        int numCiudadesEliminadas = ciudadDAO.borrarCiudadesPorNombrePais(nombrePais);
+
+        if (numCiudadesEliminadas > 0) {
+            Toast.makeText(this, numCiudadesEliminadas + " ciudades borradas correctamente", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No se encontraron ciudades para el país ingresado", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onClickActualizarPoblacion(View view) {
         String nombreCiudad = editTextNombreCiudad.getText().toString();
-        int poblacion = Integer.parseInt(editTextPoblacion.getText().toString());
+        String nombrePais = editTextNombrePais.getText().toString();
+        String poblacionStr = editTextPoblacion.getText().toString();
+
+        // Validación para el campo de país
+        if (TextUtils.isEmpty(nombrePais)) {
+            editTextNombrePais.setError("Debe ingresar un país");
+            editTextNombrePais.requestFocus();
+            return;
+        }
+
+        // Validación para el campo de ciudad
+        if (TextUtils.isEmpty(nombreCiudad)) {
+            editTextNombreCiudad.setError("Debe ingresar una ciudad");
+            editTextNombreCiudad.requestFocus();
+            return;
+        }
+
+        // Validación para el campo de población
+        if (TextUtils.isEmpty(poblacionStr)) {
+            editTextPoblacion.setError("Debe ingresar una población");
+            editTextPoblacion.requestFocus();
+            return;
+        }
+
+        int poblacion = Integer.parseInt(poblacionStr);
+
+        // Verifica que la ciudad exista en la BD
+        Ciudad ciudad = ciudadDAO.obtenerCiudadPorNombre(nombreCiudad);
+        if (ciudad == null) {
+            Toast.makeText(this, "La ciudad no existe en la base de datos", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         ciudadDAO.actualizarPoblacionCiudad(nombreCiudad, poblacion);
-
         Toast.makeText(this, "Población actualizada correctamente", Toast.LENGTH_SHORT).show();
     }
 

@@ -76,12 +76,23 @@ public class CiudadDAO extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void borrarCiudadesPorNombrePais(String nombrePais) {
+    public int borrarCiudadesPorNombrePais(String nombrePais) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.delete(TABLA_CIUDADES, CAMPO_NOMBRE_PAIS + "=?", new String[]{nombrePais});
+        // Validar que existan ciudades para ese país
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLA_CIUDADES + " WHERE " + CAMPO_NOMBRE_PAIS + " = ?", new String[] { nombrePais });
+        cursor.moveToFirst();
+        int numCiudades = cursor.getInt(0);
+        cursor.close();
 
+        if (numCiudades == 0) {
+            return 0; //No hay ciudades para el pais ingresado
+        }
+
+        int numCiudadesEliminadas = db.delete(TABLA_CIUDADES, CAMPO_NOMBRE_PAIS + "=?", new String[]{nombrePais});
         db.close();
+
+        return numCiudadesEliminadas;
     }
 
     public void actualizarPoblacionCiudad(String nombreCiudad, int poblacion) {

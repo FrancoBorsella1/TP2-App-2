@@ -145,6 +145,7 @@
         android:backgroundTint="@color/naranja"
         android:fontFamily="sans-serif-smallcaps"
         android:inputType="number"
+        android:textColor="@color/naranja"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
